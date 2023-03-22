@@ -1,0 +1,37 @@
+{
+  "name": "nmkill",
+  "version": "0.7.0",
+  "description": "Node Modules Killer",
+  "author": "Rahmat Riansyah",
+  "main": "app.js",
+  "bin": "app.js",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rahmatrians/nmkill.git"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rahmatrians/nmkill/issues"
+  },
+  "homepage": "https://github.com/rahmatrians/nmkill#readme",
+  "scripts": {
+    "test": "nmkill"
+  },
+  "keywords": [
+    "Node",
+    "Modules",
+    "Package",
+    "Library",
+    "Killer",
+    "Manager",
+    "Remover",
+    "Delete"
+  ],
+  "dependencies": {
+    "chalk": "^5.2.0",
+    "enquirer": "^2.3.6",
+    "get-folder-size": "^4.0.0",
+    "ora": "^6.2.0"
+  }
+}
