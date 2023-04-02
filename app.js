@@ -12,7 +12,7 @@ const getDirList = async () => {
     let myOS = os.type();
     let folder = 'node_modules';
 
-    let findCmd = myOS === 'Windows_NT' ? `dir ${folder} /AD/S/B` : myOS === 'Linux' ? `find / -type d -name ${folder}` : myOS === 'Darwin' ? `mdfind kind:folder "${folder}"` : undefined;
+    let findCmd = myOS === 'Windows_NT' ? `dir ..\\..\\${folder} /ad/b/s` : myOS === 'Linux' ? `find / -type d -name ${folder}` : myOS === 'Darwin' ? `mdfind kind:folder "${folder}"` : undefined;
 
     if (findCmd) {
         return new Promise(async function (resolve, reject) {
@@ -21,7 +21,7 @@ const getDirList = async () => {
                     reject(`Error: ${stderr}`);
                 } else {
                     resolve(stdout.split('\n').filter(String).map(path => {
-                        return path.split('/node_modules')[0] + '/node_modules/';
+                        return path.split(myOS ===  'Windows_NT' ? '\\node_modules' : '/node_modules')[0] + '/node_modules/';
                     }));
                 }
             })
@@ -58,7 +58,7 @@ const packageJsonAppReader = async (filePath) => {
                 value: tempVal,
                 message: c.replace('/package.json', '').split('/')[c.replace('/package.json', '').split('/').length - 1],
                 name: c.replace('/package.json', '/node_modules'),
-                alias: '  ' + tempVal + spaces.slice(0, spaces.length - tempVal.length) + res[idx] + ' MB',
+                alias: '  ' + tempVal.length > 25 ? tempVal.substr(0,24)+'...' : tempVal + spaces.slice(0, spaces.length - tempVal.length) + res[idx] + ' MB',
                 size: res[idx],
                 status: true
             };
@@ -93,27 +93,29 @@ const getData = async () => {
 
 
 const App = async () => {
+    let version = '0.7.0';
+    let author = 'rahmatrians';
+
+    console.log(`${chalk.hex('#E96479').bold('nmkill')}(${version}) @${author}`);
+
     const spinner = ora("Finding Node Modules...").start();
     const $data = await (getData());
     let currentPrompt;
     let selectedIdx;
     let exit = false;
 
-    let version = '0.7.0';
-    let author = 'rahmatrians';
-
-    spinner.succeed();
+    spinner.succeed().clear();
     console.clear();
 
     do {
-        console.log(`${chalk.hex('#E96479').bold('nmkill')}(${version})\t@${author}\n`);
+        console.log(`${chalk.hex('#E96479').bold('nmkill')}(${version}) @${author}\n`);
 
         let nmData = await $data;
         if (!selectedIdx) {
             currentPrompt?.clear();
             currentPrompt = await new enquirer.Select({
                 message: `Choose the Node Modules:`,
-                choices: [...nmData.map(e => e.alias), { name: 'exit', message: '  Exit', value: 'exit' }]
+                choices: [...nmData.map(e => e.alias), { name: 'exit', message: chalk.hex('#E96479').bold('Exit'), value: 'exit' }]
             });
 
             await currentPrompt.run()
@@ -123,7 +125,7 @@ const App = async () => {
         else {
             currentPrompt?.clear();
             currentPrompt = await new enquirer.Toggle({
-                message: `Are you sure want to remove "${$data[selectedIdx - 1].value}"?`,
+                message: `Are you sure wanna remove "${$data[selectedIdx - 1].value}"?`,
                 enabled: 'Yap',
                 disabled: 'Nope'
             });
@@ -149,3 +151,12 @@ const App = async () => {
 }
 
 App();
+
+const tst = async () => {
+    let getNMDir = await getDirList();
+    let sortNM = await removeDuplicate(getNMDir);
+    let cleanedNM = await fileExist(sortNM);
+    // let getAppName = await packageJsonAppReader(cleanedNM);
+    console.log(sortNM);
+}
+    // tst();
